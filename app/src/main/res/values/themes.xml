@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Dark, chrome-free window theme. Compose draws everything on top, so the
+      window stays fully transparent behind the status/navigation bars.
+    -->
+    <style name="Theme.SafeNight.Base" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/night_void</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+
+    <style name="Theme.SafeNight" parent="Theme.SafeNight.Base" />
+</resources>

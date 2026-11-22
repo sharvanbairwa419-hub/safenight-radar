@@ -1,0 +1,21 @@
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+app/build/
+*.apk
+*.aab
+*.keystore
+!debug.keystore
+
+# Local Android toolchain used to build the APK on this machine (JDK/SDK/Gradle).
+# Never committed: ~1.5 GB of binaries.
+.tools/
+
+# The built debug APK is intentionally published in the repo.
+!dist/*.apk

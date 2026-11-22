@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher foreground: three radar arcs and a centre blip on a night void. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M54,54 m-27,0 a27,27 0 1,1 54,0 a27,27 0 1,1 -54,0"
+        android:strokeWidth="2.6"
+        android:strokeColor="#2E7E7A"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M54,54 m-18,0 a18,18 0 1,1 36,0 a18,18 0 1,1 -36,0"
+        android:strokeWidth="2.6"
+        android:strokeColor="#3BC9B6"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M54,54 m-9,0 a9,9 0 1,1 18,0 a9,9 0 1,1 -18,0"
+        android:strokeWidth="2.6"
+        android:strokeColor="#6DF3DD"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M54,54 L72,36 A25.5,25.5 0 0,1 79,54 Z"
+        android:fillColor="#1F8F82"
+        android:fillAlpha="0.45" />
+    <path
+        android:pathData="M54,54 m-3.6,0 a3.6,3.6 0 1,1 7.2,0 a3.6,3.6 0 1,1 -7.2,0"
+        android:fillColor="#E9FFFB" />
+</vector>
