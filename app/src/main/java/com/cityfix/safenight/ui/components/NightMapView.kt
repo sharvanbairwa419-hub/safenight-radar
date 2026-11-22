@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.cityfix.safenight.location.UserFix
-import com.cityfix.safenight.map.CartoDark
+import com.cityfix.safenight.map.EsriDarkGray
 import com.cityfix.safenight.map.TileProbe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -44,15 +44,14 @@ private val PROBE_TILE: Long = MapTileIndex.getTileIndex(
 /**
  * Full-screen OpenStreetMap without an API key.
  *
- * Tiles come from the Carto dark basemap, which is night-coloured out of the box,
- * so the map reads as a dark basemap the moment the first tile lands instead of
- * waiting for a colour filter over a daylight raster. Caching is app-private and
- * configured once in [com.cityfix.safenight.SafeNightApplication], so panning a
- * route at home keeps the map usable with no signal later.
+ * Tiles come from OSM Mapnik through a night colour matrix; caching is
+ * app-private and configured once in [com.cityfix.safenight.SafeNightApplication],
+ * so panning a route at home keeps the map usable with no signal later.
  *
- * osmdroid reports tile failures nowhere, so the map is probed once: if the dark
- * CDN is unreachable it falls back to OSM Mapnik (with the night matrix), and if
- * both are unreachable [onTileStatus] carries a message for the HUD.
+ * osmdroid reports tile failures nowhere — a blocked host or captive portal just
+ * leaves an empty black canvas — so the source is probed once. If OSM is
+ * unreachable the map switches to the already-dark Esri canvas without the
+ * filter, and if that fails too [onTileStatus] carries a message for the HUD.
  */
 @Composable
 fun NightMapView(
@@ -67,7 +66,7 @@ fun NightMapView(
     val mapView = remember {
         MapView(context).apply {
             id = View.generateViewId()
-            setTileSource(CartoDark)
+            setTileSource(TileSourceFactory.MAPNIK)
             setMultiTouchControls(true)
             setTilesScaledToDpi(true)
             setUseDataConnection(true)
@@ -77,6 +76,9 @@ fun NightMapView(
             // the controller overload is the public entry point.
             controller.setZoom(DEFAULT_ZOOM)
             controller.setCenter(GeoPoint(DEFAULT_LAT, DEFAULT_LON))
+            overlayManager.tilesOverlay.setColorFilter(
+                ColorMatrixColorFilter(nightMatrix())
+            )
         }
     }
 
@@ -90,19 +92,18 @@ fun NightMapView(
     LaunchedEffect(mapView) {
         onMapReady(mapView)
 
-        val cartoReachable = withContext(Dispatchers.IO) {
-            TileProbe.reachable(CartoDark.getTileURLString(PROBE_TILE))
-        }
-        if (cartoReachable) return@LaunchedEffect
-
-        val mapnikReachable = withContext(Dispatchers.IO) {
+        val osmReachable = withContext(Dispatchers.IO) {
             TileProbe.reachable(TileSourceFactory.MAPNIK.getTileURLString(PROBE_TILE))
         }
+        if (osmReachable) return@LaunchedEffect
+
+        val fallbackReachable = withContext(Dispatchers.IO) {
+            TileProbe.reachable(EsriDarkGray.getTileURLString(PROBE_TILE))
+        }
         when {
-            mapnikReachable -> {
-                mapView.setTileSource(TileSourceFactory.MAPNIK)
-                mapView.overlayManager.tilesOverlay
-                    .setColorFilter(ColorMatrixColorFilter(nightMatrix()))
+            fallbackReachable -> {
+                mapView.setTileSource(EsriDarkGray)
+                mapView.overlayManager.tilesOverlay.setColorFilter(null)
                 mapView.invalidate()
             }
 
@@ -141,8 +142,8 @@ private fun tileY(lat: Double, zoom: Int): Int {
 
 /**
  * Desaturate + crush luminance so OSM's bright raster becomes a night basemap.
- * Only used for the Mapnik fallback: the Carto dark tiles are already dark, and
- * running this matrix over them would crush them to solid black.
+ * Cleared when the already-dark Esri canvas is swapped in, because running this
+ * matrix over it would crush those tiles to solid black.
  */
 private fun nightMatrix(): ColorMatrix {
     val matrix = ColorMatrix().apply { setSaturation(0.22f) }

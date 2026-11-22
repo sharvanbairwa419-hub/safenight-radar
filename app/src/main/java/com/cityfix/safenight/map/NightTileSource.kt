@@ -4,31 +4,27 @@ import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
 import org.osmdroid.util.MapTileIndex
 
 /**
- * CartoDB "dark_matter" raster basemap.
+ * Esri "World Dark Gray" canvas — a genuinely dark, label-free basemap.
  *
- * Why not the default OSM Mapnik source: OSM's raster is a bright daylight map,
- * so it needed a violent colour matrix to look like night — and when its tile
- * host is slow or blocked the map just stays black. Carto's dark basemap is
- * already night-coloured and is served over HTTPS from four CDN subdomains, with
- * no API key. If the CDN is unreachable the app falls back to OSM Mapnik and
- * re-applies the night matrix (see NightMapView).
+ * Only used when the OSM tile host cannot be reached. The default OSM raster is
+ * a bright daylight map that needs the night [android.graphics.ColorMatrix],
+ * while this source is already dark, so it can replace OSM at runtime without
+ * the filter. Note the ArcGIS path order is zoom / y / x.
  */
-val CartoDark: OnlineTileSourceBase = object : OnlineTileSourceBase(
-    "CartoDark",
+val EsriDarkGray: OnlineTileSourceBase = object : OnlineTileSourceBase(
+    "EsriDarkGray",
     0,
-    20,
+    19,
     256,
-    ".png",
+    ".img",
     arrayOf(
-        "https://a.basemaps.cartocdn.com/dark_all/",
-        "https://b.basemaps.cartocdn.com/dark_all/",
-        "https://c.basemaps.cartocdn.com/dark_all/",
-        "https://d.basemaps.cartocdn.com/dark_all/"
+        "https://services.arcgisonline.com/ArcGIS/rest/services/" +
+            "Canvas/World_Dark_Gray_Base/MapServer/tile/"
     )
 ) {
     override fun getTileURLString(pMapTileIndex: Long): String =
         getBaseUrl() +
             MapTileIndex.getZoom(pMapTileIndex) + "/" +
-            MapTileIndex.getX(pMapTileIndex) + "/" +
-            MapTileIndex.getY(pMapTileIndex) + ".png"
+            MapTileIndex.getY(pMapTileIndex) + "/" +
+            MapTileIndex.getX(pMapTileIndex)
 }
