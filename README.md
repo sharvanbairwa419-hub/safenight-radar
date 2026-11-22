@@ -16,7 +16,7 @@ Enable "Install unknown apps" for your file manager, then open the APK. Grant Bl
 | Feature | How it works |
 | --- | --- |
 | **Crowd radar** | `BluetoothLeScanner` reads RSSI of nearby BLE devices and `WifiManager` scan results count visible APs. Counts roll into a salted SHA-256 bucket — no MAC address or device identity is ever stored. |
-| **Night map** | OSMDroid with offline tile caching and a `ColorMatrixColorFilter` night palette, so the radar is usable without network and without a paid tile key. |
+| **Night map** | OSMDroid with the Carto dark basemap (no API key), app-private offline tile caching, and an automatic fallback to OSM Mapnik + `ColorMatrixColorFilter` night palette if the dark CDN is unreachable. A failed tile source is reported on-screen instead of leaving a black canvas. |
 | **Zone status** | 0–15 m and 15–50 m rings are projected live from the map camera. Signal dots are placed by RSSI distance estimate; the glass status pill reads green **SAFE**, amber **MODERATE** or red **ISOLATED**. |
 | **Panic SOS** | Starts a speakerphone call to `112` and fires DTMF (`112,,1`) into the IVR plus a GPS link by `SmsManager`, so the call and the coordinates both go out. |
 | **10 s pre-roll audio** | `AudioRecord` keeps a rolling PCM buffer that is written to WAV at trigger time, preserving the ten seconds *before* the call connected — something `MediaRecorder` cannot do. |

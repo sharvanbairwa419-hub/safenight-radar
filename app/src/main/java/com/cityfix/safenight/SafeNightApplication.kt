@@ -20,7 +20,9 @@ class SafeNightApplication : Application() {
 
         val config = Configuration.getInstance()
         config.load(this, getSharedPreferences(OSMDROID_PREFS, Context.MODE_PRIVATE))
-        config.userAgentValue = packageName
+        // Tile servers block anonymous clients; identify the app and a contact URL.
+        config.userAgentValue =
+            "SafeNightRadar/1.0 (+https://github.com/sharvanbairwa419-hub/safenight-radar)"
 
         val basePath = File(filesDir, "osmdroid")
         val tileCache = File(basePath, "tiles")

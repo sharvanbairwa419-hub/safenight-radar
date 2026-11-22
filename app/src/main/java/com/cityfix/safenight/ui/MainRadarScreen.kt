@@ -81,6 +81,7 @@ fun MainRadarScreen(
 ) {
     val context = LocalContext.current
     var mapView by remember { mutableStateOf<MapView?>(null) }
+    var mapNotice by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(events) {
         events.collect { event ->
@@ -113,7 +114,8 @@ fun MainRadarScreen(
             userFix = state.userFix,
             followUser = state.isRadarActive,
             onMapReady = { mapView = it },
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            onTileStatus = { mapNotice = it }
         )
 
         RadarOverlay(
@@ -170,6 +172,14 @@ fun MainRadarScreen(
                 NoticeChip(
                     text = state.notice.orEmpty(),
                     onDismiss = onDismissNotice,
+                    modifier = Modifier.padding(top = 10.dp)
+                )
+            }
+
+            mapNotice?.let { message ->
+                NoticeChip(
+                    text = message,
+                    onDismiss = { mapNotice = null },
                     modifier = Modifier.padding(top = 10.dp)
                 )
             }
